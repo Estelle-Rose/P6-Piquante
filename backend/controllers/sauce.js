@@ -42,41 +42,32 @@ exports.deleteSauce = (req, res, next) => {
 
 exports.likeSauce = (req, res, next) => {    
     const like = req.body.like;
-    
     if(like === 1) {
         Sauce.updateOne({_id: req.params.id}, { $inc: { likes: 1}, $push: { usersLiked: req.body.userId}, _id: req.params.id })
         .then( () => res.status(200).json({ message: 'You like this sauce' }))
         
         .catch( error => res.status(400).json({ error}))
     } else if(like === -1) {
-        Sauce.updateOne({_id: req.params.id}, { $inc: { dislikes: 1}, $push: { usersDisLiked: req.body.userId}, _id: req.params.id })
+        Sauce.updateOne({_id: req.params.id}, { $inc: { dislikes: 1}, $push: { usersDisliked: req.body.userId}, _id: req.params.id })
         .then( () => res.status(200).json({ message: 'You don\'t like this sauce' }))
         .catch( error => res.status(400).json({ error}))
 
-    } else {
-        
+    } else {//if(like === 0)
         Sauce.findOne( {_id: req.params.id})
         .then( sauce => {
             if( sauce.usersLiked.indexOf(req.body.userId)!== -1){
                  Sauce.updateOne({_id: req.params.id}, { $inc: { likes: -1},$pull: { usersLiked: req.body.userId}, _id: req.params.id })
-            .then( () => res.status(200).json({ message: 'You don\'t like this sauce anymore ' }))
-            .catch( error => res.status(400).json({ error}))
-            }
-            if( sauce.usersDisliked.indexOf(req.body.userId)!== -1) {
-                Sauce.updateOne( {_id: req.params.id}, { $inc: { dislikes: -1 }, $pull: { usersDisliked: req.body.userId}, _id: req.params.id})
                 .then( () => res.status(200).json({ message: 'You don\'t like this sauce anymore ' }))
                 .catch( error => res.status(400).json({ error}))
                 }
-           
+            else if( sauce.usersDisliked.indexOf(req.body.userId)!== -1) {
+                Sauce.updateOne( {_id: req.params.id}, { $inc: { dislikes: -1 }, $pull: { usersDisliked: req.body.userId}, _id: req.params.id})
+                .then( () => res.status(200).json({ message: 'You might like this sauce now ' }))
+                .catch( error => res.status(400).json({ error}))
+                }           
         })
-        .catch( error => res.status(400).json({ error}))    
-            
-
-    }
-        
-   
-    
-    
+        .catch( error => res.status(400).json({ error}))             
+    }   
 };
 
 exports.getAllSauces = (req, res, next) => {
