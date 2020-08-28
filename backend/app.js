@@ -6,8 +6,11 @@ const userRoutes = require('./routes/user');
 const path = require('path');
 const app = express();
 
+require('dotenv').config();
+const user = process.env.DB_USER;
+const pass = process.env.DB_PASS;
 // mongoose connect
-mongoose.connect('mongodb+srv://estelle-seren-66:Touffu66Dev@cluster0.elupc.mongodb.net/SoPecockoDb?retryWrites=true&w=majority',
+mongoose.connect(`mongodb+srv://${user}:${pass}@cluster0.elupc.mongodb.net/SoPecockoDb?retryWrites=true&w=majority`,
     { useNewUrlParser: true,
      useUnifiedTopology: true 
     })
