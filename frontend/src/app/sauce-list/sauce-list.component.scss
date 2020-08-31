@@ -12,6 +12,7 @@
     max-height: 250px;
   }
   h4 {
+    color: red;
     margin: 0;
     font-weight: 500;
   }
@@ -29,4 +30,7 @@
 .list-title {
   text-align: center;
   margin: 2em auto;
+}
+.main_pepper {
+  text-transform: uppercase;
 }

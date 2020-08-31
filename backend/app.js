@@ -4,13 +4,16 @@ const bodyParser = require('body-parser');
 const saucesRoutes = require('./routes/sauce');
 const userRoutes = require('./routes/user');
 const path = require('path');
+const mongoSanitize = require('express-mongo-sanitize');
+const helmet = require("helmet");
+
 const app = express();
 
 require('dotenv').config();
 const user = process.env.DB_USER;
 const pass = process.env.DB_PASS;
 // mongoose connect
-mongoose.connect(`mongodb+srv://${user}:${pass}@cluster0.elupc.mongodb.net/SoPecockoDb?retryWrites=true&w=majority`,
+mongoose.connect(`mongodb+srv://${user}:${pass}@sandbox.kcodm.mongodb.net/db_piquante?retryWrites=true&w=majority`,
     { useNewUrlParser: true,
      useUnifiedTopology: true 
     })
@@ -27,6 +30,10 @@ app.use((req, res, next) => {
 
 
 app.use(bodyParser.json()); //bodyparser
+
+app.use(mongoSanitize()); // mongo-sanitize to prevent operator injection
+app.use(helmet()); // helmet
+
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use('/api/sauces', saucesRoutes);
 app.use('/api/auth', userRoutes);
