@@ -1,16 +1,16 @@
-const Sauce = require('../models/Sauce');
-const fs = require('fs');
+const Sauce = require('../models/Sauce'); // import du modèle Sauce
+const fs = require('fs'); // file system, package qui permet de modifier et/ou supprimer des fichiers
 
 
 
 exports.createSauce = (req, res, next) => {
     const sauceObject = JSON.parse(req.body.sauce);
     delete sauceObject._id;    
-    const sauce = new Sauce({
+    const sauce = new Sauce({ // un nouvel objet sauce est crée avec le model Sauce
         ...sauceObject,
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,            
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,   // l'url de l'image enregistrée dans le dossier images du serveur est aussi stockée dans la bdd      
     });
-    sauce.save()
+    sauce.save() // la sauce est sauvegardée dans la bdd
     .then( () => res.status(201).json({ message: 'Sauce saved'}))
     .catch( error => res.status(400).json({ error }))
     console.log(sauce);

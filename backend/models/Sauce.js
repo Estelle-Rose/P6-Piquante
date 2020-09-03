@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const sauceSchema = mongoose.Schema({
+const sauceSchema = mongoose.Schema({ // structure du modèle de sauce demandé
     
     name: { type: String, required: true },
     manufacturer: { type: String, required: true },
