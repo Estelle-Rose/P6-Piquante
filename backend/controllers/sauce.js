@@ -18,7 +18,7 @@ exports.createSauce = (req, res, next) => {
 };
 
 exports.modifySauce = (req, res, next) => {
-    const sauceObject = req.file ?
+    const sauceObject = req.file ? // on vérifie si la modification concerne le body ou un nouveau fichier image
     {
         ...JSON.parse(req.body.sauce),
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
@@ -29,11 +29,11 @@ exports.modifySauce = (req, res, next) => {
 };
 
 exports.deleteSauce = (req, res, next) => {
-    Sauce.findOne({_id: req.params.id})
+    Sauce.findOne({_id: req.params.id}) // on identifie la sauce
     .then(sauce => {
-    const filename = sauce.imageUrl.split('/images/')[1];
-    fs.unlink(`images/${filename}`, () => {
-    Sauce.deleteOne({_id: req.params.id})
+    const filename = sauce.imageUrl.split('/images/')[1]; // on récupère l'adresse de l'image
+    fs.unlink(`images/${filename}`, () => { /// on la supprime du serveur
+    Sauce.deleteOne({_id: req.params.id}) // on supprime la sauce de la bdd
     .then(()=> res.status(200).json({ message: 'Sauce deleted'}))
     .catch(error => res.status(400).json({ error}))
     });
@@ -42,17 +42,17 @@ exports.deleteSauce = (req, res, next) => {
 
 exports.likeSauce = (req, res, next) => {    
     const like = req.body.like;
-    if(like === 1) {
+    if(like === 1) { // option j'aime
         Sauce.updateOne({_id: req.params.id}, { $inc: { likes: 1}, $push: { usersLiked: req.body.userId}, _id: req.params.id })
         .then( () => res.status(200).json({ message: 'You like this sauce' }))
         
         .catch( error => res.status(400).json({ error}))
-    } else if(like === -1) {
+    } else if(like === -1) { // option j'aime pas
         Sauce.updateOne({_id: req.params.id}, { $inc: { dislikes: 1}, $push: { usersDisliked: req.body.userId}, _id: req.params.id })
         .then( () => res.status(200).json({ message: 'You don\'t like this sauce' }))
         .catch( error => res.status(400).json({ error}))
 
-    } else {//if(like === 0)
+    } else {    //option annulation du j'aime ou / j'aime pas
         Sauce.findOne( {_id: req.params.id})
         .then( sauce => {
             if( sauce.usersLiked.indexOf(req.body.userId)!== -1){
@@ -70,12 +70,12 @@ exports.likeSauce = (req, res, next) => {
     }   
 };
 
-exports.getAllSauces = (req, res, next) => {
+exports.getAllSauces = (req, res, next) => { // on récupère toutes les sauces
     Sauce.find()
     .then( sauces => res.status(200).json(sauces))
     .catch( error => res.status(400).json({ error }))
 };
-exports.getOneSauce = (req, res, next) => {
+exports.getOneSauce = (req, res, next) => {  // on récupère une seule sauce
     Sauce.findOne({_id : req.params.id})
     .then( sauce => res.status(200).json(sauce))
     .catch( error => res.status(404).json({ error }))
