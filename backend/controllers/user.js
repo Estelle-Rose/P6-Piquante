@@ -3,6 +3,8 @@ const User = require('../models/User'); // modele user
 const jwt = require('jsonwebtoken'); // token generator package
 const emailValidator = require('email-validator');// email validator package
 const passwordValidator = require('password-validator'); // password validator package
+const MaskData = require('maskdata');
+
 
 const passwordSchema = new passwordValidator();
 
@@ -20,11 +22,12 @@ if (!emailValidator.validate(req.body.email) || !passwordSchema.validate(req.bod
   return res.status(400).json({ message: 'Check your email address format and your password should be at least 8 characters long, contain uppercase, lowercase letter and digit '});
   
 } else if (emailValidator.validate(req.body.email) || passwordSchema.validate(req.body.password)) { // s'ils sont valides
-
+const maskedMail = MaskData.maskEmail2(req.body.email);
     bcrypt.hash(req.body.password, 10) // bcrypt hashe le mot de passe
     .then(hash => {
+      
         const user = new User ({        // crée un nouveau user
-            email: req.body.email,
+            email: maskedMail,
             password: hash
         });
         user.save()   // et mongoose le stocke dans la bdd
@@ -40,7 +43,8 @@ if (!emailValidator.validate(req.body.email) || !passwordSchema.validate(req.bod
 
 
 exports.login = (req, res, next) => { // connexion du user
-    User.findOne({ email: req.body.email }) // on vérifie que l'adresse mail figure bien dan la bdd
+  const maskedMail = MaskData.maskEmail2(req.body.email);
+    User.findOne({ email: maskedMail }) // on vérifie que l'adresse mail figure bien dan la bdd
       .then(user => {
         if (!user) {
           return res.status(401).json({ error: 'Utilisateur non trouvé !' });
