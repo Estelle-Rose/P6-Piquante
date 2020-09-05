@@ -3,7 +3,7 @@ const User = require('../models/User'); // modele user
 const jwt = require('jsonwebtoken'); // token generator package
 const emailValidator = require('email-validator');// email validator package
 const passwordValidator = require('password-validator'); // password validator package
-const MaskData = require('maskdata');
+const MaskData = require('maskdata'); // masquage des données 
 
 
 const passwordSchema = new passwordValidator();
@@ -22,12 +22,12 @@ if (!emailValidator.validate(req.body.email) || !passwordSchema.validate(req.bod
   return res.status(400).json({ message: 'Check your email address format and your password should be at least 8 characters long, contain uppercase, lowercase letter and digit '});
   
 } else if (emailValidator.validate(req.body.email) || passwordSchema.validate(req.body.password)) { // s'ils sont valides
-const maskedMail = MaskData.maskEmail2(req.body.email);
+const maskedMail = MaskData.maskEmail2(req.body.email); // masquage de l'adresse mail
     bcrypt.hash(req.body.password, 10) // bcrypt hashe le mot de passe
     .then(hash => {
       
         const user = new User ({        // crée un nouveau user
-            email: maskedMail,
+            email: maskedMail, // l'adresse mail masquée 
             password: hash
         });
         user.save()   // et mongoose le stocke dans la bdd
